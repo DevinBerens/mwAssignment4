@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Devin - Assignment 4</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <h1>Will Ferrell's Top Movies</h1>
+    <div class="wrapper">
+      <form id="add-movie">
+        <input type="text" name="title" placeholder="Movie Title" />
+        <input type="number" name="year" placeholder="Movie Year" />
+        <button>Add Movie</button>
+      </form>
+      <ol id="movie-list"></ol>
+    </div>
+
+    <script type="module">
+      // Import the functions you need from the SDKs you need
+      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js';
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+        addDoc,
+        doc,
+        deleteDoc,
+        where,
+        query,
+        updateDoc
+      } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js';
+      // TODO: Add SDKs for Firebase products that you want to use
+      // https://firebase.google.com/docs/web/setup#available-libraries
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: 'AIzaSyB0QH6OBR4sIcXPL1GH-NyoqqFDcfKzXT0',
+        authDomain: 'movies-4c828.firebaseapp.com',
+        projectId: 'movies-4c828',
+        storageBucket: 'movies-4c828.appspot.com',
+        messagingSenderId: '29232310416',
+        appId: '1:29232310416:web:c330ffb4e6320671a61015'
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      async function getMovies(db) {
+        let movies = collection(db, 'Movies');
+        let movieSnapshot = await getDocs(movies);
+        let movieList = movieSnapshot.docs.map(doc => doc.data());
+        return movieList;
+      }
+
+      let movieList = document.querySelector('#movie-list');
+      let form = document.querySelector('#add-movie');
+
+      function renderMovie(dc) {
+        let li = document.createElement('li');
+        let title = document.createElement('span');
+        let year = document.createElement('span');
+        let cross = document.createElement('div');
+
+        li.setAttribute('data-id', dc.id);
+        title.textContent = dc.data().title;
+        year.textContent = dc.data().year;
+        cross.textContent = 'X';
+        cross.style.position = 'absolute';
+        cross.style.right = '50px';
+        cross.style.cursor = 'pointer';
+        cross.style.marginTop = '10px';
+        li.appendChild(cross);
+        li.appendChild(title);
+        li.appendChild(year);
+        movieList.appendChild(li);
+
+        cross.addEventListener('click', e => {
+          e.stopPropagation();
+          let id = e.target.parentElement.getAttribute('data-id');
+          deleteDoc(doc(db, 'Movies', id));
+        });
+      }
+
+      let movies = getDocs(collection(db, 'Movies')).then(snapshot => {
+        snapshot.forEach(doc => {
+          renderMovie(doc);
+        });
+      });
+
+      let q = query(
+        collection(db, 'Movies'),
+        where('title', '==', 'Step Brothers')
+      );
+      let querySnapshot = await getDocs(q);
+      querySnapshot.forEach(doc => {
+        console.log(doc);
+      });
+
+      let upDoc = doc(db, 'Movies', 'E4cbqtVgSbUETpzP2lmU');
+      updateDoc(upDoc, {
+        name: 'Anchorman'
+      });
+
+      form.addEventListener('submit', e => {
+        e.preventDefault();
+        let docRef = addDoc(collection(db, 'Movies'), {
+          title: form.title.value,
+          year: form.year.value
+        });
+      });
+    </script>
+  </body>
+</html>

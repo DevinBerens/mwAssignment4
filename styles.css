@@ -1,0 +1,33 @@
+body {
+  background: #1f2833;
+  font-family: 'Inter', sans-serif;
+}
+
+h1 {
+  text-align: center;
+  margin-top: 100px;
+  color: #ffffff;
+}
+
+.wrapper {
+  background: #dddddd;
+  margin: 50px auto;
+  max-width: 960px;
+  border-radius: 6px;
+  padding: 20px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+ol {
+  padding: 0;
+}
+
+li {
+  margin-top: 10px;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #000000;
+}
